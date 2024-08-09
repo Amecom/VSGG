@@ -386,6 +386,11 @@ interface IVSGGSErrors {
     // Generic Errors
 
     /**
+     * @dev Indicate a bad call
+     */
+    error BadCall();
+
+    /**
      * @dev Indicates that the caller is not authorized to perform an operation.
      * @param account Address of the unauthorized caller.
      */
