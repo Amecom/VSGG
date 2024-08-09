@@ -1,6 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+/*
+ * @title VSGG Interface
+ * @author Amedeo C.
+ * @dev This contract define VSGG interface.
+ * 
+ * Contact Information:
+ * - Author: Amedeo C.
+ * - Email: amecom@gmail.com
+ * - Website: https://www.vibrantseedsgodsgarden.com/
+ *
+ */
+
+
 // See https://eips.ethereum.org/EIPS/eip-721 
 interface IERC721Receiver {
     function onERC721Received(
