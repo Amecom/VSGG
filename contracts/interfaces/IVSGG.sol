@@ -11,13 +11,17 @@ interface IERC721Receiver {
 }
 
 interface IERC165 {
+
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
+
 }
 
 interface IERC721 is IERC165 {
+
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
     function balanceOf(address owner) external view returns (uint256 balance);
     function ownerOf(uint256 tokenId) external view returns (address owner);
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
@@ -27,12 +31,15 @@ interface IERC721 is IERC165 {
     function setApprovalForAll(address operator, bool approved) external;
     function getApproved(uint256 tokenId) external view returns (address operator);
     function isApprovedForAll(address owner, address operator) external view returns (bool);
+
 }
 
 interface IERC721Metadata is IERC721 {
+
     function name() external view returns (string memory);
     function symbol() external view returns (string memory);
     function tokenURI(uint256 tokenId) external view returns (string memory);
+
 }
 
 interface IVSGG is IERC721Metadata {
@@ -44,20 +51,22 @@ interface IVSGG is IERC721Metadata {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     struct Seed {
-        uint256 seedType;  // vibrant or viable , se vale zero non e' consolitato
-        uint256 mutations; // Numero di mutazioni
+        // 0 = Vibrant Not consolidated
+        // 1 = Vibrant
+        // 2 = Viable
+        uint256 seedType;
+        uint256 mutations;
         bytes32 hash;
         uint256 fee;
         uint8[300] dna;
-        // I VALORI SICCESSIVI VALGONO SOLO PER I SEMI VIBRANTI
-        uint8 fml;  // family
-        uint8 wht;  // white class
-        uint8 ntr;  // neutral class
-        uint8 blc;  // black class
-        uint8 frc;  // frequence class
-        uint8 cvr;  // color avergae
-        uint8 isa;  // is_ambiguos (bool)
-        uint16 rpt; // repetition (uint16)
+        uint8 fml;
+        uint8 wht;
+        uint8 ntr;
+        uint8 blc;
+        uint8 frc;
+        uint8 cvr;
+        uint8 isa;
+        uint16 rpt;
     }
 
     struct ContractSummary {
