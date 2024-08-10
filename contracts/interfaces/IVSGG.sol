@@ -122,13 +122,13 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
 
     /*
      * Mints a new Viable Seed. 
-     * @dev The genetic recombination rules must be managed by the `authorizedContract`.
+     * @dev The genetic recombination rules must be managed by the `recombinerContract`.
      * @param to: The owner of the minted seed.
      * @param vsTokenIdA: The tokenId of a consolidated Vibrant seed. 
      * @param vsTokenIdB: The tokenId of a consolidated Vibrant seed. 
      * @param dna: Genetic code of the new Viable Seed. 
      * Emits Transfer event.
-     * Raises CallerNotAuthorized if the call is not from the authorizedContract.
+     * Raises CallerNotAuthorized if the call is not from the recombinerContract.
      * Raises InsufficientValue if the value sent does not cover the fees required by the vsTokenIdA, vsTokenIdB, and contract.
      * Raises VSGGViableSeedInactive if viable minting has not started.
      * Raises VSGGInvalidDnaSequence if the values in the sequence are not between the minimum and maximum values expressed by the parents at the same position.
@@ -149,11 +149,11 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
 
     /*
      * Mutates the genetic code of a Viable Seed.
-     * @dev The genetic recombination rules must be managed by the `authorizedContract`.
+     * @dev The genetic recombination rules must be managed by the `recombinerContract`.
      * @param tokenId: The tokenId of the token to mutate.
      * @param mutatorTokenId: The tokenId with which the mutation occurs.
      * @param dna: The new genetic code of the token.
-     * Raises CallerNotAuthorized if the call is not from the authorizedContract.
+     * Raises CallerNotAuthorized if the call is not from the recombinerContract.
      * Raises InsufficientValue if the value sent does not cover the fees required by mutatorTokenId and the contract.
      * Raises ERC721IncorrectOwner if the tokenId does not match tx.origin.
      * Raises VSGGViableSeedInactive if viable minting has not started.
@@ -187,7 +187,7 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      * Raises VSGGContractOrZeroAddressRequired if newAddress is not Address(0) or a contract address.
      */
-    function setAuthorizedContract(address newAddress) external;
+    function setRecombinerContract(address newAddress) external;
 
     /*
      * Changes the base URL for a token's metadata.
@@ -263,7 +263,7 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
      * @return the address of the external contract that can call the mintViable and mutateViable functions.
      * @dev If this value is equal to address(0), it is possible to interact with these methods directly.
      */
-    function authorizedContract() external view returns (address);
+    function recombinerContract() external view returns (address);
 
     /*
      * @return the fee the contract owner receives when a seed is created or mutated.
