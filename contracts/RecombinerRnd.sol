@@ -57,7 +57,7 @@ import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfac
 contract RecombinerRnd {
 
     // Define the VSGG contract address
-    IVSGG private constant VSGG_CONTRACT = IVSGG(0x0000000000000000000000000000000000000000); 
+    IVSGG private constant VSGG_CONTRACT = IVSGG(0xd9145CCE52D386f254917e481eB44e9943F39138); 
 
     constructor() {}
 
@@ -101,6 +101,32 @@ contract RecombinerRnd {
         VSGG_CONTRACT.mutateViable{value: msg.value}(tokenId, mutatorTokenId, newCode);
     }
 
+    /**
+     * @dev Unlike mutateViable, this method does not verify token ownership before mutation. 
+     * This is only possible for Viable Seeds with allowUnsignedMutation set to 1 (true).
+     * By default, this is 0 (false). 
+     * When allowUnsignedMutation is enabled, the VSGG contract bypasses the tx.origin check during mutateViable calls. 
+     * In a real-world context, mutateViableUnsigned should still be called only by the owner of the Recombiner contract.
+     * @param tokenId The tokenId of the Viable Seed to be mutated.
+     * @param mutatorTokenId The tokenId of the Seed used for mutation.
+     */
+    function mutateViableUnsigned(uint256 tokenId, uint256 mutatorTokenId) public payable {
+
+        // Token `tokenId` ownership check is bypassed.
+
+        // Retrieve the code of the original and mutator Seeds.
+        (uint8[300] memory originalCode, uint8[300] memory mutatorCode) = (
+            VSGG_CONTRACT.tokenSeed(tokenId).code, 
+            VSGG_CONTRACT.tokenSeed(mutatorTokenId).code
+        );
+
+        // Generate a new code using a random recombination method.
+        uint8[300] memory newCode = _generateRandomCode(originalCode, mutatorCode);
+
+        // Call the mutateViable function in the VSGG contract to mutate the Seed's code.
+        VSGG_CONTRACT.mutateViable{value: msg.value}(tokenId, mutatorTokenId, newCode);
+    }
+
     /*
      * @dev Internal function to generate a random code based on two parent codes.
      * @param codeA The first seed code.
@@ -112,21 +138,22 @@ contract RecombinerRnd {
         view  
         returns (uint8[300] memory) 
     {
-        bytes32 seed = keccak256(abi.encodePacked(block.number, msg.sender));
+        bytes32 seed = keccak256(abi.encode(block.number, msg.sender));
         uint8[300] memory newCode;
+        uint256 minValue;
+        uint256 maxValue;
+        uint256 randomInt;
         // Iterate through each position in the code sequences.
         for (uint256 i = 0; i < 300;) {
             // Generate a random number based on block information, sender address, and current index.
-            uint256 randomInt = uint256(keccak256(abi.encodePacked(seed, i)));
-
+            randomInt = uint256(keccak256(abi.encode(seed, i)));
             // Determine the minimum and maximum values between the two parent codes at the same position.
-            uint256 minValue = codeA[i] < codeB[i] ? codeA[i] : codeB[i];
-            uint256 maxValue = codeA[i] > codeB[i] ? codeA[i] : codeB[i];
-
+            minValue = codeA[i] < codeB[i] ? codeA[i] : codeB[i];
+            maxValue = codeA[i] > codeB[i] ? codeA[i] : codeB[i];
             // Assign a random value within the determined range to the new code sequence.
-            newCode[i] = uint8((randomInt % (maxValue - minValue + 1)) + minValue);
-
-            // newCode[i] = uint8(v);
+            unchecked {
+                newCode[i] = uint8((randomInt % (maxValue - minValue + 1)) + minValue);
+            }
             unchecked {
                 ++ i;
             }
