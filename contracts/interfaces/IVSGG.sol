@@ -150,6 +150,7 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
      * Raises CallerNotAuthorized if the call is not from the recombinerContract.
      * Raises InsufficientValue if the value sent does not cover the fees required by mutatorTokenId and the contract.
      * Raises ERC721IncorrectOwner if the tokenId does not match tx.origin.
+     * @notice The `recombinerContract` can mutate a Viable Seed without the owner's permission if the token's `AllowUnsignedMutation` is set to `1` (true). In this case, the `tx.origin` check is bypassed.
      * Raises VSGGViableSeedInactive if viable minting has not started.
      * Raises VSGGActionNotAllowedOnVibrantSeed if tokenId is not a Viable seed.
      * Raises VSGGInvalidCode if the values in the sequence are not between the minimum and maximum values expressed by the tokenId and mutatorTokenId at the same position.
