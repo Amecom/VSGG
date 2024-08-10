@@ -61,6 +61,7 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
         bytes32 hash;
         uint256 fee;
         uint8[300] code;
+        uint8 allowUnsignedMutation;        
         uint8 fml;
         uint8 wht;
         uint8 ntr;
@@ -69,6 +70,8 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
         uint8 cvr;
         uint8 isa;
         uint16 rpt;
+        uint256 created;
+        uint256 updated;
     }
 
     struct ContractSummary {
@@ -155,12 +158,24 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
     function mutateViable(uint256 tokenId, uint256 mutatorTokenId, uint8[300] calldata code) external payable;
 
     /*
+     * @dev Updates the `allowUnsignedMutation` setting for the token with the given `tokenId`.
+     * @notice The variable controls whether a specific Viable Seed can be mutated without 
+     * the explicit signature or approval of the token’s owner. The default value is false
+     * @param tokenId The ID of the token whose setting will be updated.
+     * @param value Set to `true` to allow unsigned mutations; `false` otherwise.
+     * Raises `ERC721IncorrectOwner` if the caller is not the owner.
+     */
+    function setTokenAllowUnsignedMutation(uint256 tokenId, bool value) external;
+
+    /*
      * Changes the fees required by the token owner for its use.
+     * @notice The default value is 100000000000000 (0,0001 eth)
      * @param tokenId: The tokenId of the token to change the fees for.
      * @param amount: Fee value expressed in wei.
      * Raises ERC721IncorrectOwner if the token owner is not the msg.sender.
      */
     function setTokenFee(uint256 tokenId, uint256 amount) external;
+
 
     // WRITE (CONTRACT OWNER)
 
