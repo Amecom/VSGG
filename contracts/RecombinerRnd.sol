@@ -4,9 +4,9 @@ pragma solidity ^0.8.20;
 import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfaces/IVSGG.sol";
 
 /*
- * @title Genetic Recombination Contract
+ * @title Recombination Contract
  * @author Amedeo C.
- * @notice This contract is for educational purposes and demonstrates genetic recombination in smart contracts.
+ * @notice This contract is for educational purposes and demonstrates seed recombination in smart contracts.
  * @dev This contract allows the creation and mutation of Viable Seeds.
  * 
  * Contact Information:
@@ -15,10 +15,10 @@ import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfac
  * - Website: https://www.vibrantseedsgodsgarden.com/
  *
  *
- * THIS CONTRACT SHOWS AN EXAMPLE OF VSGG GENETIC RECOMBINATION 
+ * THIS CONTRACT SHOWS AN EXAMPLE OF SEED RECOMBINATION 
  * WITH RANDOMLY SELECTED VALUES WITHIN THE PERMITTED RANGES.
  *
- * Genetic recombination is used to create or mutate Viable Seeds,
+ * Recombination is used to create or mutate Viable Seeds,
  * while Vibrant Seeds cannot be generated or mutated. 
  * 
  * The main VSGG contract sets a few basic rules:
@@ -27,14 +27,14 @@ import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfac
  *
  * - The generation of Viable Seeds is only allowed after all Vibrant Seeds have been minted.
  *
- * - A Viable Seed can only be created through the genetic recombination of two consolidated Vibrant Seeds.
+ * - A Viable Seed can only be created through the recombination of two consolidated Vibrant Seeds.
  *
- * - Valid genetic sequences must fall within the minimum and maximum values expressed by the
+ * - Valid sequences must fall within the minimum and maximum values expressed by the
  *   parent Seeds at each corresponding position.
  *
  * Mutating a Viable Seed: 
  *
- * - Only the owner can alter the genetic code of a Viable Seed.
+ * - Only the owner can alter the sequence of a Viable Seed.
  *
  * - Mutation can occur by combining with any type of Seed, and valid sequences must adhere 
  *   to the minimum and maximum values set by both the original Viable Seed and the Seed 
@@ -42,19 +42,19 @@ import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfac
  *
  * Additionally:
  * 
- * - The newly generated or mutated genetic code must be unique, meaning it cannot 
+ * - The newly generated or mutated sequence must be unique, meaning it cannot 
  *   already exist in another Seed. 
  *
  * - Creating and mutating Viable Seeds requires a fee, which is paid to the owners of the Seeds involved.
  *   The fee amount is set by the Seed owners themselves.
  *
- * The selection of values for the new genetic sequence is handled by an external contract, which,
+ * The selection of values for the new sequence is handled by an external contract, which,
  * once authorized, can apply its own recombination rules. As this contract is replaceable, 
  * the logic for recombination can change over time.
  */
 
 
-contract GeneticRecombRnd {
+contract RecombinerRnd {
 
     // Define the VSGG contract address
     IVSGG private constant VSGG_CONTRACT = IVSGG(0x0000000000000000000000000000000000000000); 
@@ -62,7 +62,7 @@ contract GeneticRecombRnd {
     constructor() {}
 
     /**
-     * @dev Mints a new Viable Seed using the genetic material from two Vibrant Seeds.
+     * @dev Mints a new Viable Seed using the sequences from two consolidated Vibrant Seeds.
      * @param vsTokenIdA The tokenId of the consolidated Vibrant Seed (parent A).
      * @param vsTokenIdB The tokenId of the consolidated Vibrant Seed (parent B).
      */

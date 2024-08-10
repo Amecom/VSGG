@@ -181,15 +181,6 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
     function openOwnership() external;
 
     /*
-     * Sets the address of the contract authorized to call the Viable Seed management methods.
-     * Non-reversible action.
-     * @param newAddress: The address of the new contract.
-     * Raises CallerNotAuthorized if the caller is not the contract owner.
-     * Raises VSGGContractOrZeroAddressRequired if newAddress is not Address(0) or a contract address.
-     */
-    function setRecombinerContract(address newAddress) external;
-
-    /*
      * Changes the base URL for a token's metadata.
      * @param newURI: The new URL.
      * Raises CallerNotAuthorized if the caller is not the contract owner.
@@ -210,6 +201,15 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      */
     function setContractURI(string calldata newURI) external; 
+
+    /*
+     * Sets the address of the contract authorized to call the Viable Seed methods.
+     * Non-reversible action.
+     * @param newAddress: The address of the new contract.
+     * Raises CallerNotAuthorized if the caller is not the contract owner.
+     * Raises VSGGContractOrZeroAddressRequired if newAddress is not Address(0) or a contract address.
+     */
+    function setRecombinerContract(address newAddress) external;
 
     /*
      * Consolidates information about a Vibrant Seed on the chain.
