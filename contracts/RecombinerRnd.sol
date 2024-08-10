@@ -134,27 +134,25 @@ contract RecombinerRnd {
      * return newCode A new code generated from the parent codes.
      */
     function _generateRandomCode(uint8[300] memory codeA, uint8[300] memory codeB) 
-        public 
+        internal 
         view  
         returns (uint8[300] memory) 
     {
-        bytes32 seed = keccak256(abi.encode(block.number, msg.sender));
+        bytes32 seed = keccak256(abi.encodePacked(block.number, msg.sender));
         uint8[300] memory newCode;
-        uint256 minValue;
-        uint256 maxValue;
+        uint16 minValue;
+        uint16 maxValue;
         uint256 randomInt;
         // Iterate through each position in the code sequences.
         for (uint256 i = 0; i < 300;) {
             // Generate a random number based on block information, sender address, and current index.
-            randomInt = uint256(keccak256(abi.encode(seed, i)));
+            randomInt = uint256(keccak256(abi.encodePacked(seed, i)));
             // Determine the minimum and maximum values between the two parent codes at the same position.
             minValue = codeA[i] < codeB[i] ? codeA[i] : codeB[i];
             maxValue = codeA[i] > codeB[i] ? codeA[i] : codeB[i];
             // Assign a random value within the determined range to the new code sequence.
             unchecked {
                 newCode[i] = uint8((randomInt % (maxValue - minValue + 1)) + minValue);
-            }
-            unchecked {
                 ++ i;
             }
         }
