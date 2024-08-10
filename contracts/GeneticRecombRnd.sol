@@ -57,27 +57,25 @@ import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfac
 contract GeneticRecombRnd {
 
     // Define the VSGG contract address
-    IVSGG private constant VSGG_CONTRACT = IVSGG(0xC3Ba5050Ec45990f76474163c5bA673c244aaECA); 
+    IVSGG private constant VSGG_CONTRACT = IVSGG(0x0000000000000000000000000000000000000000); 
 
     constructor() {}
 
     /**
      * @dev Mints a new Viable Seed using the genetic material from two Vibrant Seeds.
-     * @param mother The tokenId of the mother Vibrant Seed.
-     * @param father The tokenId of the father Vibrant Seed.
+     * @param vsTokenIdA The tokenId of the consolidated Vibrant Seed (parent A).
+     * @param vsTokenIdB The tokenId of the consolidated Vibrant Seed (parent B).
      */
-    function mintViable(uint256 mother, uint256 father) public payable {
+    function mintViable(uint256 vsTokenIdA, uint256 vsTokenIdB) public payable {
         // Retrieve the DNA sequences of the parent Seeds.
-        (uint8[300] memory motherDna, uint8[300] memory fatherDna) = (
-            VSGG_CONTRACT.tokenSeed(mother).dna, 
-            VSGG_CONTRACT.tokenSeed(father).dna
+        (uint8[300] memory dnaA, uint8[300] memory dnaB) = (
+            VSGG_CONTRACT.tokenSeed(vsTokenIdA).dna, 
+            VSGG_CONTRACT.tokenSeed(vsTokenIdB).dna
         );
-
         // Generate a new DNA sequence using a random recombination method.
-        uint8[300] memory newDna = _generateRandomDna(motherDna, fatherDna);
-
+        uint8[300] memory newDna = _generateRandomDna(dnaA, dnaB);
         // Call the mintViable function in the VSGG contract to mint the new Viable Seed.
-        VSGG_CONTRACT.mintViable{value: msg.value}(msg.sender, mother, father, newDna);
+        VSGG_CONTRACT.mintViable{value: msg.value}(msg.sender, vsTokenIdA, vsTokenIdB, newDna);
     }
 
     /**
@@ -105,11 +103,11 @@ contract GeneticRecombRnd {
 
     /*
      * @dev Internal function to generate a random DNA sequence based on two parent DNAs.
-     * @param dna1 The first DNA sequence (e.g., from the mother or the original Seed).
-     * @param dna2 The second DNA sequence (e.g., from the father or the mutator Seed).
+     * @param dnaA The first DNA sequence.
+     * @param dnaB The second DNA sequence.
      * return newDna A new DNA sequence generated from the parent DNAs.
      */
-    function _generateRandomDna(uint8[300] memory dna1, uint8[300] memory dna2) 
+    function _generateRandomDna(uint8[300] memory dnaA, uint8[300] memory dnaB) 
         public 
         view  
         returns (uint8[300] memory) 
@@ -122,8 +120,8 @@ contract GeneticRecombRnd {
             uint256 randomInt = uint256(keccak256(abi.encodePacked(seed, i)));
 
             // Determine the minimum and maximum values between the two parent DNAs at the same position.
-            uint256 minValue = dna1[i] < dna2[i] ? dna1[i] : dna2[i];
-            uint256 maxValue = dna1[i] > dna2[i] ? dna1[i] : dna2[i];
+            uint256 minValue = dnaA[i] < dnaB[i] ? dnaA[i] : dnaB[i];
+            uint256 maxValue = dnaA[i] > dnaB[i] ? dnaA[i] : dnaB[i];
 
             // Assign a random value within the determined range to the new DNA sequence.
             newDna[i] = uint8((randomInt % (maxValue - minValue + 1)) + minValue);

@@ -124,17 +124,17 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
      * Mints a new Viable Seed. 
      * @dev The genetic recombination rules must be managed by the `authorizedContract`.
      * @param to: The owner of the minted seed.
-     * @param mother: The tokenId of the mother token. Must be a Vibrant seed. 
-     * @param father: The tokenId of the father token. Must be a Vibrant seed. 
+     * @param vsTokenIdA: The tokenId of a consolidated Vibrant seed. 
+     * @param vsTokenIdB: The tokenId of a consolidated Vibrant seed. 
      * @param dna: Genetic code of the new Viable Seed. 
      * Emits Transfer event.
      * Raises CallerNotAuthorized if the call is not from the authorizedContract.
-     * Raises InsufficientValue if the value sent does not cover the fees required by the mother, father, and contract.
+     * Raises InsufficientValue if the value sent does not cover the fees required by the vsTokenIdA, vsTokenIdB, and contract.
      * Raises VSGGViableSeedInactive if viable minting has not started.
      * Raises VSGGInvalidDnaSequence if the values in the sequence are not between the minimum and maximum values expressed by the parents at the same position.
      * Raises VSGGDuplicateDna if the DNA already exists.
      */
-    function mintViable(address to, uint256 mother, uint256 father, uint8[300] calldata dna) external payable;
+    function mintViable(address to, uint256 vsTokenIdA, uint256 vsTokenIdB, uint8[300] calldata dna) external payable;
 
     /*
      * Returns ownership of the contract to the previous owner.
