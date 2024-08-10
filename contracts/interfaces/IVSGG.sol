@@ -276,7 +276,7 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
     function contractURI() external view returns (string memory);
 
     /*
-     * @return true if the hash of a DNA code has already been stored.
+     * @return true if the hash of a seed code has already been stored.
      */
     function hashExists(bytes32 hash) external view returns (bool);
 
@@ -432,13 +432,13 @@ interface IVSGGSErrors {
     error VSGGContractOrZeroAddressRequired(address account);
 
     /**
-     * @dev Indicates that the DNA provided for a seed creation or mutation is already in use.
+     * @dev Indicates that the code provided for a seed creation or mutation is already in use.
      */
     error VSGGDuplicatedCode();
 
     /**
-     * @dev Indicates a failure to create or mutate a seed because the DNA sequence is invalid. 
-     * The DNA does not match the basic rules of recombination.
+     * @dev Indicates a failure to create or mutate a seed because the code sequence is invalid. 
+     * The code does not match the basic rules of recombination.
      */
     error VSGGInvalidCode();
 

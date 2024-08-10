@@ -67,19 +67,19 @@ contract RecombinerRnd {
      * @param vsTokenIdB The tokenId of the consolidated Vibrant Seed (parent B).
      */
     function mintViable(uint256 vsTokenIdA, uint256 vsTokenIdB) public payable {
-        // Retrieve the DNA sequences of the parent Seeds.
-        (uint8[300] memory dnaA, uint8[300] memory dnaB) = (
-            VSGG_CONTRACT.tokenSeed(vsTokenIdA).dna, 
-            VSGG_CONTRACT.tokenSeed(vsTokenIdB).dna
+        // Retrieve the code of the parent Seeds.
+        (uint8[300] memory codeA, uint8[300] memory codeB) = (
+            VSGG_CONTRACT.tokenSeed(vsTokenIdA).code, 
+            VSGG_CONTRACT.tokenSeed(vsTokenIdB).code
         );
-        // Generate a new DNA sequence using a random recombination method.
-        uint8[300] memory newDna = _generateRandomDna(dnaA, dnaB);
+        // Generate a new code  using a random recombination method.
+        uint8[300] memory newCode = _generateRandomCode(codeA, codeB);
         // Call the mintViable function in the VSGG contract to mint the new Viable Seed.
-        VSGG_CONTRACT.mintViable{value: msg.value}(msg.sender, vsTokenIdA, vsTokenIdB, newDna);
+        VSGG_CONTRACT.mintViable{value: msg.value}(msg.sender, vsTokenIdA, vsTokenIdB, newCode);
     }
 
     /**
-     * @dev Mutates a Viable Seed's DNA by combining it with another Seed's DNA.
+     * @dev Mutates a Viable Seed's code by combining it with another Seed's code.
      * @param tokenId The tokenId of the Viable Seed to be mutated.
      * @param mutatorTokenId The tokenId of the Seed used for mutation.
      */
@@ -88,50 +88,50 @@ contract RecombinerRnd {
         // NOTE: This check is also done in the VSGG contract using tx.origin.
         require(VSGG_CONTRACT.ownerOf(tokenId) == msg.sender, "NotOwned");
 
-        // Retrieve the DNA sequences of the original and mutator Seeds.
-        (uint8[300] memory originalDna, uint8[300] memory mutatorDna) = (
-            VSGG_CONTRACT.tokenSeed(tokenId).dna, 
-            VSGG_CONTRACT.tokenSeed(mutatorTokenId).dna
+        // Retrieve the code of the original and mutator Seeds.
+        (uint8[300] memory originalCode, uint8[300] memory mutatorCode) = (
+            VSGG_CONTRACT.tokenSeed(tokenId).code, 
+            VSGG_CONTRACT.tokenSeed(mutatorTokenId).code
         );
 
-        // Generate a new DNA sequence using a random recombination method.
-        uint8[300] memory newDna = _generateRandomDna(originalDna, mutatorDna);
+        // Generate a new code using a random recombination method.
+        uint8[300] memory newCode = _generateRandomCode(originalCode, mutatorCode);
 
-        // Call the mutateViable function in the VSGG contract to mutate the Seed's DNA.
-        VSGG_CONTRACT.mutateViable{value: msg.value}(tokenId, mutatorTokenId, newDna);
+        // Call the mutateViable function in the VSGG contract to mutate the Seed's code.
+        VSGG_CONTRACT.mutateViable{value: msg.value}(tokenId, mutatorTokenId, newCode);
     }
 
     /*
-     * @dev Internal function to generate a random DNA sequence based on two parent DNAs.
-     * @param dnaA The first DNA sequence.
-     * @param dnaB The second DNA sequence.
-     * return newDna A new DNA sequence generated from the parent DNAs.
+     * @dev Internal function to generate a random code based on two parent codes.
+     * @param codeA The first seed code.
+     * @param codeB The second seed code.
+     * return newCode A new code generated from the parent codes.
      */
-    function _generateRandomDna(uint8[300] memory dnaA, uint8[300] memory dnaB) 
+    function _generateRandomCode(uint8[300] memory codeA, uint8[300] memory codeB) 
         public 
         view  
         returns (uint8[300] memory) 
     {
         bytes32 seed = keccak256(abi.encodePacked(block.number, msg.sender));
-        uint8[300] memory newDna;
-        // Iterate through each position in the DNA sequences.
+        uint8[300] memory newCode;
+        // Iterate through each position in the code sequences.
         for (uint256 i = 0; i < 300;) {
             // Generate a random number based on block information, sender address, and current index.
             uint256 randomInt = uint256(keccak256(abi.encodePacked(seed, i)));
 
-            // Determine the minimum and maximum values between the two parent DNAs at the same position.
-            uint256 minValue = dnaA[i] < dnaB[i] ? dnaA[i] : dnaB[i];
-            uint256 maxValue = dnaA[i] > dnaB[i] ? dnaA[i] : dnaB[i];
+            // Determine the minimum and maximum values between the two parent codes at the same position.
+            uint256 minValue = codeA[i] < codeB[i] ? codeA[i] : codeB[i];
+            uint256 maxValue = codeA[i] > codeB[i] ? codeA[i] : codeB[i];
 
-            // Assign a random value within the determined range to the new DNA sequence.
-            newDna[i] = uint8((randomInt % (maxValue - minValue + 1)) + minValue);
+            // Assign a random value within the determined range to the new code sequence.
+            newCode[i] = uint8((randomInt % (maxValue - minValue + 1)) + minValue);
 
-            // newDna[i] = uint8(v);
+            // newCode[i] = uint8(v);
             unchecked {
                 ++ i;
             }
         }
-        return newDna;
+        return newCode;
     }
 
 }
