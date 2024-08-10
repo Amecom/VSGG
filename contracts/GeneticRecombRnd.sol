@@ -57,7 +57,7 @@ import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfac
 contract GeneticRecombRnd {
 
     // Define the VSGG contract address
-    IVSGG public constant VSGG_CONTRACT = IVSGG(0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8); 
+    IVSGG private constant VSGG_CONTRACT = IVSGG(0xC3Ba5050Ec45990f76474163c5bA673c244aaECA); 
 
     constructor() {}
 
@@ -68,8 +68,10 @@ contract GeneticRecombRnd {
      */
     function mintViable(uint256 mother, uint256 father) public payable {
         // Retrieve the DNA sequences of the parent Seeds.
-        uint8[300] memory motherDna = VSGG_CONTRACT.tokenSeed(mother).dna;
-        uint8[300] memory fatherDna = VSGG_CONTRACT.tokenSeed(father).dna;
+        (uint8[300] memory motherDna, uint8[300] memory fatherDna) = (
+            VSGG_CONTRACT.tokenSeed(mother).dna, 
+            VSGG_CONTRACT.tokenSeed(father).dna
+        );
 
         // Generate a new DNA sequence using a random recombination method.
         uint8[300] memory newDna = _generateRandomDna(motherDna, fatherDna);
@@ -89,8 +91,10 @@ contract GeneticRecombRnd {
         require(VSGG_CONTRACT.ownerOf(tokenId) == msg.sender, "NotOwned");
 
         // Retrieve the DNA sequences of the original and mutator Seeds.
-        uint8[300] memory originalDna = VSGG_CONTRACT.tokenSeed(tokenId).dna;
-        uint8[300] memory mutatorDna = VSGG_CONTRACT.tokenSeed(mutatorTokenId).dna;
+        (uint8[300] memory originalDna, uint8[300] memory mutatorDna) = (
+            VSGG_CONTRACT.tokenSeed(tokenId).dna, 
+            VSGG_CONTRACT.tokenSeed(mutatorTokenId).dna
+        );
 
         // Generate a new DNA sequence using a random recombination method.
         uint8[300] memory newDna = _generateRandomDna(originalDna, mutatorDna);
@@ -99,32 +103,37 @@ contract GeneticRecombRnd {
         VSGG_CONTRACT.mutateViable{value: msg.value}(tokenId, mutatorTokenId, newDna);
     }
 
-    /**
+    /*
      * @dev Internal function to generate a random DNA sequence based on two parent DNAs.
      * @param dna1 The first DNA sequence (e.g., from the mother or the original Seed).
      * @param dna2 The second DNA sequence (e.g., from the father or the mutator Seed).
-     * @return newDna A new DNA sequence generated from the parent DNAs.
+     * return newDna A new DNA sequence generated from the parent DNAs.
      */
     function _generateRandomDna(uint8[300] memory dna1, uint8[300] memory dna2) 
-        internal 
-        view 
+        public 
+        view  
         returns (uint8[300] memory) 
     {
+        bytes32 seed = keccak256(abi.encodePacked(block.number, msg.sender));
         uint8[300] memory newDna;
-
         // Iterate through each position in the DNA sequences.
-        for (uint256 i = 0; i < 300; i++) {
+        for (uint256 i = 0; i < 300;) {
             // Generate a random number based on block information, sender address, and current index.
-            bytes32 randomHash = keccak256(abi.encode(block.timestamp, msg.sender, i));
+            uint256 randomInt = uint256(keccak256(abi.encodePacked(seed, i)));
 
             // Determine the minimum and maximum values between the two parent DNAs at the same position.
-            uint8 minValue = dna1[i] < dna2[i] ? dna1[i] : dna2[i];
-            uint8 maxValue = dna1[i] > dna2[i] ? dna1[i] : dna2[i];
+            uint256 minValue = dna1[i] < dna2[i] ? dna1[i] : dna2[i];
+            uint256 maxValue = dna1[i] > dna2[i] ? dna1[i] : dna2[i];
 
             // Assign a random value within the determined range to the new DNA sequence.
-            newDna[i] = uint8(uint256(randomHash) % (maxValue - minValue + 1) + minValue);
-        }
+            newDna[i] = uint8((randomInt % (maxValue - minValue + 1)) + minValue);
 
+            // newDna[i] = uint8(v);
+            unchecked {
+                ++ i;
+            }
+        }
         return newDna;
     }
+
 }
