@@ -87,18 +87,7 @@ contract RecombinerRnd {
         // Ensure the caller is the owner of the Viable Seed to be mutated.
         // NOTE: This check is also done in the VSGG contract using tx.origin.
         require(VSGG_CONTRACT.ownerOf(tokenId) == msg.sender, "NotOwned");
-
-        // Retrieve the code of the original and mutator Seeds.
-        (uint8[300] memory originalCode, uint8[300] memory mutatorCode) = (
-            VSGG_CONTRACT.tokenSeed(tokenId).code, 
-            VSGG_CONTRACT.tokenSeed(mutatorTokenId).code
-        );
-
-        // Generate a new code using a random recombination method.
-        uint8[300] memory newCode = _generateRandomCode(originalCode, mutatorCode);
-
-        // Call the mutateViable function in the VSGG contract to mutate the Seed's code.
-        VSGG_CONTRACT.mutateViable{value: msg.value}(tokenId, mutatorTokenId, newCode);
+        _mutate(tokenId, mutatorTokenId);
     }
 
     /**
@@ -111,21 +100,21 @@ contract RecombinerRnd {
      * @param mutatorTokenId The tokenId of the Seed used for mutation.
      */
     function mutateViableUnsigned(uint256 tokenId, uint256 mutatorTokenId) public payable {
+        _mutate(tokenId, mutatorTokenId);
+    }
 
-        // Token `tokenId` ownership check is bypassed.
-
+    function _mutate(uint256 tokenId, uint256 mutatorTokenId) internal {
         // Retrieve the code of the original and mutator Seeds.
         (uint8[300] memory originalCode, uint8[300] memory mutatorCode) = (
             VSGG_CONTRACT.tokenSeed(tokenId).code, 
             VSGG_CONTRACT.tokenSeed(mutatorTokenId).code
         );
-
         // Generate a new code using a random recombination method.
         uint8[300] memory newCode = _generateRandomCode(originalCode, mutatorCode);
-
         // Call the mutateViable function in the VSGG contract to mutate the Seed's code.
         VSGG_CONTRACT.mutateViable{value: msg.value}(tokenId, mutatorTokenId, newCode);
     }
+
 
     /*
      * @dev Internal function to generate a random code based on two parent codes.
