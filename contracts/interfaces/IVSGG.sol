@@ -210,7 +210,7 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
 
     /*
      * @notice Changes the fees required by the token owner for its use.
-     * @dev The default value is 10000000000000 (0,001 eth)
+     * @dev The default value is 1000000000000000 (0,001 eth)
      * @param tokenId: The tokenId of the token to change the fees for.
      * @param amount: Fee value expressed in wei.
      * Emits TokenUpdated event.
