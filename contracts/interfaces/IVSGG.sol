@@ -61,10 +61,11 @@ interface IERC721Metadata /* is IERC721 */ {
     function tokenURI(uint256 tokenId) external view returns (string memory);
 }
 
+
 // VSGG interface
 interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
 
-    // event Consolidated(uint256 tokenId);
+    event BaseUriUpdated(string newURI);
     event ContractFeeUpdated(uint256 newFee);
     event ContractURIUpdated(string newURI);
     event MintingStatusUpdated(bool isMintingAllowed);
@@ -95,10 +96,10 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
         string name;
         string symbol;
         address owner;
-        uint256 totalSupply;
+        uint256 vibrantMaxSupply;
         string contractURI;
         bool isMintAllowed;
-        uint256 lastTokenId;
+        uint256 totalSupply;
         uint256 contractFee;
     }
 
@@ -318,11 +319,6 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
      */
     function isOwnershipOpen() external view returns (bool);
 
-    /*
-     * @return the total number of tokens minted. 
-     * @dev This value may be higher than the value returned by totalSupply() because it also includes Viable Seeds.
-     */
-    function lastTokenId() external view returns (uint256);
 
     /*
      * @return the contract owner address.
@@ -340,15 +336,20 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
      */
     function tokenSeed(uint256 tokenId) external view returns (Seed memory);
 
-    /*
-     * @return the maximum supply of Vibrant Seeds. 
+    /**
+     * @dev Returns the total amount of tokens stored by the contract.
      */
-    function totalSupply() external pure returns (uint256);
+    function totalSupply() external view returns (uint256);
 
     /*
      * @return the number of Vibrant Seeds owned by the `owner` account. (Does not include Viable seeds)
      */
     function vibrantBalanceOf(address owner) external view returns (uint256);
+
+    /*
+     * @return the maximum supply of Vibrant Seeds. 
+     */
+    function vibrantMaxSupply() external pure returns (uint256);
 
 }
 
@@ -473,7 +474,7 @@ interface IVSGGSErrors {
      * @dev Indicates a failure to create or mutate a seed because the code sequence is invalid. 
      * The code does not match the basic rules of recombination.
      */
-    error VSGGInvalidCode();
+    error VSGGInvalidCode(uint256 index, uint256 minAllowed, uint8 value, uint256 maxAllowed);
 
     /**
      * @dev Indicates that minting is not currently active, and the action cannot be performed.
@@ -489,7 +490,7 @@ interface IVSGGSErrors {
      * @dev Indicates a failure to consolidate a Vibrant Seed because it is already consolidated. 
      * This error only occurs when the contract has been opened for ownership.
      */
-    error VSGGTokenAlreadyConsolidated();
+    error VSGGTokenAlreadyConsolidated(uint256 tokenId);
 
     /**
      * @dev Indicates a failure to perform an action on a Viable Seed because the minting of Vibrant Seeds has not finished.
