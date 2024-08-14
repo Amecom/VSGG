@@ -23,12 +23,12 @@ interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
+// See https://eips.ethereum.org/EIPS/eip-173
 interface IERC173 /* is ERC165 */ {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     function owner() view external returns(address);
     function transferOwnership(address _newOwner) external;	
 }
-
 
 // See https://eips.ethereum.org/EIPS/eip-721
 interface IERC721 /* is IERC165 */ {
@@ -52,7 +52,6 @@ interface IERC721Metadata /* is IERC721 */ {
     function symbol() external view returns (string memory);
     function tokenURI(uint256 tokenId) external view returns (string memory);
 }
-
 
 // VSGG interface
 interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
@@ -131,10 +130,8 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     // WRITE (PUBLIC)
 
     /*
-     * Allows an account to take ownership of the contract. 
-     * Anyone who owns more Vibrant Seeds than the previous owner can take ownership of the contract.
-     * Once ownership is obtained, the new owner should call transferOwnership() 
-     * to disable rollbackOwnership() and prove that they can manage the contract.
+     * @notice Allows an account to take ownership of the contract. 
+     * @dev Anyone who owns more Vibrant Seeds than the previous owner can take ownership of the contract. Once ownership is obtained, the new owner should call transferOwnership() to disable rollbackOwnership() and prove that they can manage the contract.
      * @dev The balance of the contract is sent to the previous owner.
      * Emits OwnershipTransferred event.
      * Raises VSGGOwnershipClosed if the ownership is still not open.
@@ -143,7 +140,7 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     function claimOwnership() external;
 
     /*
-     * Mints a new Vibrant Seed.
+     * @notice Mints a new Vibrant Seed.
      * @param to: The owner of the minted seed.
      * Emits Transfer event.
      * Raises VSGGMintingInactive if the minting phase is paused.
@@ -158,7 +155,7 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     function mint() external payable; 
 
     /*
-     * Mints a new Viable Seed. 
+     * @notice Mints a new Viable Seed. 
      * @dev The recombination rules must be managed by the `recombinerContract`.
      * @param to: The owner of the minted seed.
      * @param vsTokenIdA: The tokenId of a consolidated Vibrant seed. 
@@ -174,7 +171,7 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     function mintViable(address to, uint256 vsTokenIdA, uint256 vsTokenIdB, uint8[300] calldata code) external payable;
 
     /*
-     * Returns ownership of the contract to the previous owner.
+     * @notice Returns ownership of the contract to the previous owner.
      * @dev The balance of the contract is sent to the previous owner.
      * Emits OwnershipTransferred event.
      * Raises VSGGOwnershipClosed.
@@ -185,15 +182,15 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     // WRITE (TOKEN OWNER)
 
     /*
-     * Mutates the code of a Viable Seed.
-     * @dev The recombination rules must be managed by the `recombinerContract`.
+     * @notice Mutates the code of a Viable Seed.
+     * @dev The recombination rules must be managed by the `recombinerContract`. The `recombinerContract` can mutate a Viable Seed without the owner's permission if the token's `AllowUnsignedMutation` is set to `1` (true). In this case, the `tx.origin` check is bypassed.
      * @param tokenId: The tokenId of the token to mutate.
      * @param mutatorTokenId: The tokenId with which the mutation occurs.
      * @param code: The new code of the token.
+     * Emits TokenUpdated event.
      * Raises CallerNotAuthorized if the call is not from the recombinerContract.
      * Raises InsufficientValue if the value sent does not cover the fees required by mutatorTokenId and the contract.
      * Raises ERC721IncorrectOwner if the tokenId does not match tx.origin.
-     * @notice The `recombinerContract` can mutate a Viable Seed without the owner's permission if the token's `AllowUnsignedMutation` is set to `1` (true). In this case, the `tx.origin` check is bypassed.
      * Raises VSGGViableSeedInactive if viable minting has not started.
      * Raises VSGGActionNotAllowedOnVibrantSeed if tokenId is not a Viable seed.
      * Raises VSGGInvalidCode if the values in the sequence are not between the minimum and maximum values expressed by the tokenId and mutatorTokenId at the same position.
@@ -202,43 +199,48 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     function mutateViable(uint256 tokenId, uint256 mutatorTokenId, uint8[300] calldata code) external payable;
 
     /*
-     * @dev Updates the `allowUnsignedMutation` setting for the token with the given `tokenId`.
-     * @notice The variable controls whether a specific Viable Seed can be mutated without 
-     * the explicit signature or approval of the token’s owner. The default value is false
+     * @notice Updates the `allowUnsignedMutation` setting for the token with the given `tokenId`.
+     * @dev The variable controls whether a specific Viable Seed can be mutated without the explicit signature or approval of the token’s owner. The default value is false.
      * @param tokenId The ID of the token whose setting will be updated.
      * @param value Set to `true` to allow unsigned mutations; `false` otherwise.
+     * Emits TokenUpdated event.
      * Raises `ERC721IncorrectOwner` if the caller is not the owner.
      */
     function setTokenAllowUnsignedMutation(uint256 tokenId, bool value) external;
 
     /*
-     * Changes the fees required by the token owner for its use.
-     * @notice The default value is 100000000000000 (0,0001 eth)
+     * @notice Changes the fees required by the token owner for its use.
+     * @dev The default value is 10000000000000 (0,001 eth)
      * @param tokenId: The tokenId of the token to change the fees for.
      * @param amount: Fee value expressed in wei.
+     * Emits TokenUpdated event.
      * Raises ERC721IncorrectOwner if the token owner is not the msg.sender.
      */
     function setTokenFee(uint256 tokenId, uint256 amount) external;
 
-
     // WRITE (CONTRACT OWNER)
 
     /*
-     * Opens up the ownership of the contract to anyone who wants to claim it.
+     * @notice Opens up the ownership of the contract to anyone who wants to claim it.
+     * @dev Owner-only method.
+     * Emit OwnershipOpened event
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      * Raises VSGGViableSeedInactive if the Viable Seed era has not started.
      */
     function openOwnership() external;
 
     /*
-     * Changes the base URL for a token's metadata.
+     * @notice Changes the base URL for a token's metadata.
+     * @dev Owner-only method.
      * @param newURI: The new URL.
+     * Emit BaseUriUpdated event
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      */
     function setBaseURI(string calldata newURI) external; 
 
     /*
-     * Changes the fees required by the contract owner for Seed operations.
+     * @notice Changes the fees required by the contract owner for Seed operations.
+     * @dev Owner-only method.
      * @param amount: The new fee value in wei.
      * Emits ContractFeeUpdated event.
      * Raises CallerNotAuthorized if the caller is not the contract owner.
@@ -246,23 +248,27 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     function setContractFee(uint256 amount) external;
 
     /*
-     * Changes the URL for a contract's metadata.
+     * @notice Changes the URL for a contract's metadata.
+     * @dev Owner-only method.
      * @param newURI: The new URL.
+     * Emits ContractURIUpdated event.
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      */
     function setContractURI(string calldata newURI) external; 
 
     /*
-     * Sets the address of the contract authorized to call the Viable Seed methods.
-     * Non-reversible action.
+     * @notice Sets the address of the contract authorized to call the Viable Seed methods.
+     * @dev Owner-only method. Non-reversible action.
      * @param newAddress: The address of the new contract.
+     * Emits RecombinerUpdated event.
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      * Raises VSGGContractOrZeroAddressRequired if newAddress is not Address(0) or a contract address.
      */
     function setRecombinerContract(address newAddress) external;
 
     /*
-     * Consolidates information about a Vibrant Seed on the chain.
+     * @notice Consolidates information about a Vibrant Seed on the chain.
+     * @dev Owner-only method. The consolidation can be overridden as long as ownership has not been opened.
      * @param tokenId: The tokenId to consolidate.
      * @param code: Seed code.
      * @param fml: Seed value.
@@ -273,34 +279,25 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
      * @param cvr: Seed value.
      * @param isa: Seed value.
      * @param rpt: Seed value.
-     * Emits Consolidated event.
+     * Emits TokenUpdated event.
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      * Raises VSGGVibrantSeedRequired if tokenId is not a Vibrant seed.
      * Raises VSGGTokenAlreadyConsolidated if the token is already consolidated and the ownership is open.
      * Raises VSGGDuplicatedCode if the code already exists.
      */
-    function setTokenSeed(
-        uint256 tokenId, 
-        uint8[300] calldata code, 
-        uint8 fml, 
-        uint8 wht, 
-        uint8 ntr, 
-        uint8 blc, 
-        uint8 frc, 
-        uint8 cvr, 
-        uint8 isa, 
-        uint16 rpt
-    ) external;
+    function setTokenSeed(uint256 tokenId, uint8[300] calldata code, uint8 fml, uint8 wht, uint8 ntr, uint8 blc, uint8 frc, uint8 cvr, uint8 isa, uint16 rpt) external;
 
     /*
-     * Toggles the value of the minting status.
+     * @notice Toggles the value of the minting status.
+     * @dev Owner-only method.
+     * Emits MintingStatusUpdated event. 
      * Raises CallerNotAuthorized if the caller is not the contract owner.
      */
     function toggleMintingStatus() external;
 
     /*
-     * Transfers ownership of the contract to another address.
-     * @dev The balance of the contract is sent to the previous owner.
+     * @notice Transfers ownership of the contract to another address.
+     * @dev Owner-only method. The balance of the contract is sent to the previous owner.
      * @param newOwner: The address of the new owner.
      * Emits OwnershipTransferred event.
      * Raises CallerNotAuthorized if the caller is not the contract owner.
@@ -362,7 +359,7 @@ interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
     function tokenSeed(uint256 tokenId) external view returns (Seed memory);
 
     /**
-     * @dev Returns the total amount of tokens stored by the contract.
+     * @return the total amount of tokens stored by the contract.
      */
     function totalSupply() external view returns (uint256);
 
