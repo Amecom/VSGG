@@ -57,12 +57,45 @@ interface IERC721Metadata /* is IERC721 */ {
 // VSGG interface
 interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
 
+    /**
+    * @dev Emitted when the base URI for token metadata is updated.
+    * @param newURI The new base URI.
+    */
     event BaseUriUpdated(string newURI);
+
+    /**
+    * @dev Emitted when the contract fee is updated.
+    * @param newFee The new fee amount.
+    */
     event ContractFeeUpdated(uint256 newFee);
+
+    /**
+    * @dev Emitted when the contract-level metadata URI is updated.
+    * @param newURI The new contract URI.
+    */
     event ContractURIUpdated(string newURI);
+
+    /**
+    * @dev Emitted when the minting status is updated.
+    * @param isMintingAllowed Indicates whether minting is allowed (true) or not (false).
+    */
     event MintingStatusUpdated(bool isMintingAllowed);
+
+    /**
+    * @dev Emitted when ownership of the contract is opened, allowing claimOwnership method.
+    */
     event OwnershipOpened();
+
+    /**
+    * @dev Emitted when the Recombiner contract address is updated.
+    * @param newAddress The new address of the Recombiner contract.
+    */
     event RecombinerUpdated(address newAddress);
+
+    /**
+    * @dev Emitted when a token's properties are updated.
+    * @param tokenId The ID of the updated token.
+    */
     event TokenUpdated(uint256 tokenId);
 
     struct Seed {
@@ -432,7 +465,7 @@ interface IVSGGSErrors {
 
     /**
      * @dev Indicates insufficient ETH value to perform the operation.
-     * @param account Address of the account with insufficient balance.
+     * @param account Address of the account with insufficient value.
      */
     error InsufficientValue(address account);
 
@@ -448,7 +481,7 @@ interface IVSGGSErrors {
      * @dev Indicates that an action is not allowed on a Vibrant Seed. 
      * This error is used in the mutateViable function.
      */
-    error VSGGActionNotAllowedOnVibrantSeed();
+    error VSGGActionNotAllowedOnVibrantSeed(uint256 tokenId);
 
     /**
      * @dev Indicates a failure to perform an action because the provided address is invalid. 
@@ -463,9 +496,13 @@ interface IVSGGSErrors {
     error VSGGDuplicatedCode();
 
     /**
-     * @dev Indicates a failure to create or mutate a seed because the code sequence is invalid. 
-     * The code does not match the basic rules of recombination.
-     */
+    * @dev Indicates a failure to create or mutate a seed due to an invalid code sequence.
+    * The code does not adhere to the basic recombination rules.
+    * @param index The position of the first invalid element.
+    * @param minAllowed The minimum allowed value (inclusive).
+    * @param value The evaluated value.
+    * @param maxAllowed The maximum allowed value (inclusive).
+    */
     error VSGGInvalidCode(uint256 index, uint256 minAllowed, uint8 value, uint256 maxAllowed);
 
     /**
@@ -481,6 +518,7 @@ interface IVSGGSErrors {
     /**
      * @dev Indicates a failure to consolidate a Vibrant Seed because it is already consolidated. 
      * This error only occurs when the contract has been opened for ownership.
+     * @param tokenId Identifier number of a token.
      */
     error VSGGTokenAlreadyConsolidated(uint256 tokenId);
 
@@ -496,8 +534,9 @@ interface IVSGGSErrors {
 
     /**
      * @dev Indicates a failure to perform an action that requires a Vibrant Seed.
+     * @param tokenId Identifier number of a token.
      */
-    error VSGGVibrantSeedRequired();
+    error VSGGVibrantSeedRequired(uint256 tokenId);
 
 }
 
