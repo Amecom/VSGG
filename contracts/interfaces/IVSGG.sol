@@ -461,10 +461,11 @@ interface IVSGGSErrors {
     error ExternalCallFailed();
 
     /**
-     * @dev Indicates insufficient ETH value to perform the operation.
-     * @param account Address of the account with insufficient value.
-     */
-    error InsufficientValue(address account);
+    * @dev Error indicating that the ETH value sent is insufficient to perform the operation.
+    * @param requiredValue The minimum required value.
+    * @param sentValue The value that was sent.
+    */
+    error InsufficientValue(uint256 requiredValue, uint256 sentValue);
 
     /**
      * @dev Indicates that a reentrant call was detected, which is not allowed.
