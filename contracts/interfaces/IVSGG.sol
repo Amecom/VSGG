@@ -23,6 +23,21 @@ interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
+interface IERC173 /* is ERC165 */ {
+    /// @dev This emits when ownership of a contract changes.    
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    /// @notice Get the address of the owner    
+    /// @return The address of the owner.
+    function owner() view external returns(address);
+	
+    /// @notice Set the address of the new owner of the contract
+    /// @dev Set _newOwner to address(0) to renounce any ownership.
+    /// @param _newOwner The address of the new owner of the contract    
+    function transferOwnership(address _newOwner) external;	
+}
+
+
 // See https://eips.ethereum.org/EIPS/eip-721
 interface IERC721 /* is IERC165 */ {
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
@@ -47,13 +62,15 @@ interface IERC721Metadata /* is IERC721 */ {
 }
 
 // VSGG interface
-interface IVSGG is IERC165, IERC721, IERC721Metadata {
+interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
 
-    event Consolidated(uint256 tokenId);
+    // event Consolidated(uint256 tokenId);
     event ContractFeeUpdated(uint256 newFee);
     event ContractURIUpdated(string newURI);
     event MintingStatusUpdated(bool isMintingAllowed);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipOpened();
+    event RecombinerUpdated(address newAddress);
+    event TokenUpdated(uint256 tokenId);
 
     struct Seed {
         uint256 seedType;  // 0 = Vibrant Not consolidated;  1 = Vibrant; 2 = Viable
@@ -277,11 +294,6 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
     function contractFee() external view returns (uint256); 
 
     /*
-     * @return the contract owner address.
-     */
-    function contractOwner() external view returns (address);
-
-    /*
      * @return aggregate information about the contract [IVSGGStruct-ContractSummary].
      */
     function contractSummary() external view returns (ContractSummary memory);
@@ -311,6 +323,11 @@ interface IVSGG is IERC165, IERC721, IERC721Metadata {
      * @dev This value may be higher than the value returned by totalSupply() because it also includes Viable Seeds.
      */
     function lastTokenId() external view returns (uint256);
+
+    /*
+     * @return the contract owner address.
+     */
+    function owner() external view returns (address);
 
     /*
      * @return the address of the external contract that can call the mintViable and mutateViable functions.

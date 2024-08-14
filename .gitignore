@@ -1,0 +1,12 @@
+
+/contracts/artifacts
+contracts/test.sol
+contracts/VibrantSeedsGodsGarden.sol
+contracts/ViableProxy.sol
+/contracts/.states
+contracts/VSGG.sol
+.deps/
+/contracts/.deploys
+/contracts/interfaces/artifacts
+contracts/interfaces/IVSGG_OLD.sol
+contracts/VSGG_OLD.sol
