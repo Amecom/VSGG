@@ -56,8 +56,8 @@ import {IVSGG} from "https://github.com/Amecom/VSGG/blob/main/contracts/interfac
 
 contract RecombinerRnd {
 
-    // Define the VSGG contract address
-    IVSGG private constant VSGG_CONTRACT = IVSGG(0xd9145CCE52D386f254917e481eB44e9943F39138); 
+    // Define the VSGG contract address (Sepolia:0x59E8C72430cCEF9d09a8B3a378D5c541574630d2)
+    IVSGG private constant VSGG_CONTRACT = IVSGG(0x1426AA39949DB3dC328F4d28e5a599e7E5790ddc); 
 
     constructor() {}
 

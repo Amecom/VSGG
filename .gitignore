@@ -10,3 +10,4 @@ contracts/VSGG.sol
 /contracts/interfaces/artifacts
 contracts/interfaces/IVSGG_OLD.sol
 contracts/VSGG_OLD.sol
+contracts/VSGG_1.2.sol
