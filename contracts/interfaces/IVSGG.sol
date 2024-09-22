@@ -54,7 +54,7 @@ interface IERC721Metadata /* is IERC721 */ {
 }
 
 // VSGG interface
-interface IVSGG2 is IERC165, IERC173, IERC721, IERC721Metadata {
+interface IVSGG is IERC165, IERC173, IERC721, IERC721Metadata {
 
     /**
     * @dev Emitted when the base URI for token metadata is updated.
@@ -213,7 +213,7 @@ interface IVSGG2 is IERC165, IERC173, IERC721, IERC721Metadata {
     /*
      * @return the hash of a seed code.
      */
-    function codeToHash(uint8[256] memory code) external pure returns(bytes32);
+    function codeToHash(uint8[256] memory code) external view returns(bytes32);
 
     /*
      * @return the URL with the contract metadata (as suggested by OpenSea).
@@ -228,7 +228,7 @@ interface IVSGG2 is IERC165, IERC173, IERC721, IERC721Metadata {
     /*
      * @return true if the hash of a seed code has already been stored.
      */
-    function hashExists(uint8[256] memory code) external returns(bool);
+    function hashExists(uint8[256] memory code) external view returns(bool);
 
     /*
      * @return the address of the external contract that can call the mintViable and mutateViable functions.
@@ -259,7 +259,7 @@ interface IVSGG2 is IERC165, IERC173, IERC721, IERC721Metadata {
     /*
      * @return the maximum supply of Vibrant Seeds. 
      */
-    function vibrantSupply() external pure returns (uint256);
+    function vibrantSupply() external view returns (uint256);
 
 }
 
