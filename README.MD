@@ -24,3 +24,16 @@ This GitHub repository is a testament to our core philosophy: to foster a protoc
 We are building a protocol where the future is collectively managed, ideally through robust DAO structures. This ensures decentralized control and continuous evolution, principles deeply embedded in the very core rules of the protocol itself.
 
 **Join us** in shaping a constantly growing ecosystem, created by the community, for the community. Explore the code, contribute your ideas, and let's push the boundaries of decentralized creativity together!
+
+---
+
+## Explore More
+
+For less technical and more accessible content, check out the **Knowledge Hub** on Medium:
+👉 [VSGG Knowledge Hub](https://amecom.medium.com/vsgg-knowledge-hub-6e453df74fe1)
+
+Visit the official website to mint a seed or explore the dApp:
+🌱 [www.vibrantseedsgodsgarden.com](https://www.vibrantseedsgodsgarden.com/?app=sleeping)
+
+Follow us on X for updates and community news:
+🐦 [@VibrantSeedsGG](https://x.com/VibrantSeedsGG)
