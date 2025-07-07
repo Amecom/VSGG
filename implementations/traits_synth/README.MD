@@ -1,4 +1,4 @@
-# Introduction to `traits_synth`: an API to compute traits from a VSGG SEED
+# Introduction to `traits_synth`: an Library to compute traits from a VSGG SEED
 
 `traits_synth` is a library designed to interpret a VSGG SEED 
 (a sequence of 256 integers, each ranging from 0 to 255) 
